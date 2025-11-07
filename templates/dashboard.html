@@ -63,19 +63,19 @@
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('consultas_miembros') }}">
+                            <a class="nav-link" href="/miembros">
                                 <i class="fas fa-users"></i> Consultar Miembros
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('consultas_pagos') }}">
+                            <a class="nav-link" href="/pagos">
                                 <i class="fas fa-money-bill-wave"></i> Consultar Pagos
                             </a>
                         </li>
                         {% endif %}
                         
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('consultas_clases') }}">
+                            <a class="nav-link" href="/clases">
                                 <i class="fas fa-calendar-alt"></i> Clases Disponibles
                             </a>
                         </li>
@@ -288,4 +288,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
