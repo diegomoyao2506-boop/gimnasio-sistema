@@ -3,8 +3,8 @@ from functools import wraps
 import bcrypt
 import datetime
 import os
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import psycopg
+from psycopg.rows import dict_row
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,9 +21,9 @@ app.config['MYSQL_PORT'] = int(os.getenv('MYSQL_PORT', '5432'))
 
 # Función para conexión a PostgreSQL
 def get_db_connection():
-    conn = psycopg2.connect(
+    conn = psycopg.connect(
         host=app.config['MYSQL_HOST'],
-        database=app.config['MYSQL_DB'],
+        dbname=app.config['MYSQL_DB'],
         user=app.config['MYSQL_USER'],
         password=app.config['MYSQL_PASSWORD'],
         port=app.config['MYSQL_PORT']
@@ -34,7 +34,7 @@ def get_db_connection():
 def crear_tablas_si_no_existen():
     try:
         conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur = conn.cursor(row_factory=dict_row)
         
         # Crear tabla de usuarios si no existe
         cur.execute("""
@@ -744,3 +744,4 @@ if __name__ == '__main__':
         print("=" * 60)
 
         app.run(debug=True, host='0.0.0.0', port=5000)
+
