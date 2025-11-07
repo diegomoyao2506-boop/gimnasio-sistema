@@ -21,6 +21,44 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 mysql = MySQL(app)
 
+# ========== CREAR TABLAS SI NO EXISTEN ==========
+def crear_tablas_si_no_existen():
+    try:
+        cur = mysql.connection.cursor()
+        
+        # Crear tabla de usuarios si no existe
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(50) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                nombre VARCHAR(100) NOT NULL,
+                rol VARCHAR(20) NOT NULL,
+                activo BOOLEAN DEFAULT TRUE,
+                fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        # Insertar usuario admin si no existe
+        cur.execute("SELECT COUNT(*) FROM usuarios WHERE username = 'admin'")
+        if cur.fetchone()[0] == 0:
+            # Contraseña: password123
+            hashed_password = bcrypt.hashpw('password123'.encode('utf-8'), bcrypt.gensalt())
+            cur.execute("""
+                INSERT INTO usuarios (username, password, nombre, rol) 
+                VALUES (%s, %s, %s, %s)
+            """, ('admin', hashed_password.decode('utf-8'), 'Administrador', 'admin'))
+        
+        mysql.connection.commit()
+        cur.close()
+        print("✅ Tablas creadas correctamente")
+    except Exception as e:
+        print(f"⚠️ Error en tablas: {e}")
+
+# Llamar la función cuando la app inicie
+with app.app_context():
+    crear_tablas_si_no_existen()
+    
 # ========== DECORADORES ==========
 def login_required(f):
     @wraps(f)
@@ -588,4 +626,5 @@ if __name__ == '__main__':
         print("=" * 60)
         print("🌐 Abre tu navegador y ve a: http://localhost:5000")
         print("=" * 60)
+
         app.run(debug=True, host='0.0.0.0', port=5000)
